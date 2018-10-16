@@ -26,16 +26,21 @@ func dfsR(node *bn.Node, path *[]*bn.Node) {
 	}
 }
 
-func paths(node *bn.Node, path *[]*bn.Node, forest *[]*bn.Node) {
-	*path = append(*path, node)
+func paths(node *bn.Node, path []*bn.Node, forest *[][]bn.Node) {
+	path = append(path, node)
+
 	if node.NoChildren() {
-		*forest = append(*forest, *path...)
-		*forest = append(*forest, &bn.Node{Val: 0})
+		var derefPath []bn.Node
+		for _, n := range path {
+			derefPath = append(derefPath, *n)
+		}
+		*forest = append(*forest, derefPath)
 	}
 
 	for _, child := range node.Children() {
 		paths(child, path, forest)
-		*path = (*path)[:len(*path)-1]
+		// delete the last node
+		copy(path[:len(path)-1], path)
 	}
 }
 
@@ -55,13 +60,19 @@ func dfs(root *bn.Node) []*bn.Node {
 	return accumulator
 }
 
-func main() {
+func buildRoot() *bn.Node {
 	root := &bn.Node{Val: 1}
 	root.Left = &bn.Node{Val: 10}
 	root.Right = &bn.Node{Val: 6}
 	root.Left.Left = &bn.Node{Val: 6}
 	root.Left.Right = &bn.Node{Val: 3}
 	root.Right.Left = &bn.Node{Val: 7}
+
+	return root
+}
+
+func main() {
+	root := buildRoot()
 
 	fullGraph := dfs(root)
 	fmt.Printf("fullGraph: %-v\n", fullGraph)
@@ -70,8 +81,14 @@ func main() {
 	dfsR(root, fullGraphR)
 	fmt.Printf("fullGraphR: %-v\n", fullGraphR)
 
-	allPaths := &[]*bn.Node{}
-	paths(root, &[]*bn.Node{}, allPaths)
+	allPaths := [][]bn.Node{}
+	paths(root, []*bn.Node{}, &allPaths)
 
 	fmt.Printf("paths: %-v\n", allPaths)
+	for _, row := range allPaths {
+		fmt.Printf("row: %-v\n", row)
+		for _, n := range row {
+			fmt.Print(n.String())
+		}
+	}
 }
