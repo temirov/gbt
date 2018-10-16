@@ -6,6 +6,16 @@ import (
 	"testing"
 )
 
+func TestPopPanic(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("The code did not panic")
+		}
+	}()
+
+	stack.Stack([]*node.Node{}).Pop()
+}
+
 func TestPop(t *testing.T) {
 	cases := []struct {
 		in   stack.Stack
