@@ -26,16 +26,19 @@ func dfsR(node *bn.Node, path *[]*bn.Node) {
 	}
 }
 
-func paths(node *bn.Node, path *[]*bn.Node, forest *[]*bn.Node) {
-	*path = append(*path, node)
+func paths(node *bn.Node, path []*bn.Node, forest []*bn.Node) {
+	path = append(path, node)
 	if node.NoChildren() {
-		*forest = append(*forest, *path...)
-		*forest = append(*forest, &bn.Node{Val: 0})
+		forest = append(forest, path...)
+		forest = append(forest, &bn.Node{Val: 0})
 	}
 
 	for _, child := range node.Children() {
 		paths(child, path, forest)
-		*path = (*path)[:len(*path)-1]
+		fmt.Printf("path before copy: %-v\n", path)
+		// copy(path[:len(path)-1], path)
+		// path[:len(path)-1] = nil
+		fmt.Printf("path after copy: %-v\n", path)
 	}
 }
 
@@ -70,8 +73,8 @@ func main() {
 	dfsR(root, fullGraphR)
 	fmt.Printf("fullGraphR: %-v\n", fullGraphR)
 
-	allPaths := &[]*bn.Node{}
-	paths(root, &[]*bn.Node{}, allPaths)
+	allPaths := []*bn.Node{}
+	paths(root, []*bn.Node{}, allPaths)
 
 	fmt.Printf("paths: %-v\n", allPaths)
 }
